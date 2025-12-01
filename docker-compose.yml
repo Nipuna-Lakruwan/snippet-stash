@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Service 1: The Database
+  mongo:
+    image: mongo:6           # Pulls the official MongoDB image
+    ports:
+      - "27017:27017"        # Default Mongo port
+    volumes:
+      - mongo-data:/data/db  # SAVES DATA even if container deletes!
+
+  # Service 2: The Backend API
+  backend:
+    build: ./backend         # Build from the backend folder
+    ports:
+      - "5001:5000"          # Map Mac's 5001 to Container's 5000
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/snippetstash
+    depends_on:
+      - mongo                # Wait for DB to start first
+
+  # Service 3: The React Frontend
+  frontend:
+    build: ./frontend        # Build from the frontend folder
+    ports:
+      - "3000:3000"
+    stdin_open: true         # Keeps the browser connection open
+    tty: true
+
+# Define the storage volume for the DB
+volumes:
+  mongo-data:
