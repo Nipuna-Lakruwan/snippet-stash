@@ -12,14 +12,6 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # DEBUG STEP: This will show us exactly what the runner sees
-    - name: List Files
-      run: |
-        echo "Listing root files:"
-        ls -la
-        echo "Listing backend files:"
-        ls -la backend
-
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -30,14 +22,16 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: ./backend
-        file: ./backend/Dockerfile   # <--- Explicitly pointing to the file
+        file: ./backend/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/snippet-backend:latest
+        provenance: false  # <--- THE MAGIC FIX (Ignore git errors)
 
     - name: Build and Push Frontend
       uses: docker/build-push-action@v4
       with:
         context: ./frontend
-        file: ./frontend/Dockerfile  # <--- Explicitly pointing to the file
+        file: ./frontend/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/snippet-frontend:latest
+        provenance: false  # <--- THE MAGIC FIX (Ignore git errors)
