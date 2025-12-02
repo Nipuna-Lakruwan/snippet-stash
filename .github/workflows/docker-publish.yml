@@ -48,13 +48,19 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # 1. Stop the old containers
+            # 1. GO TO THE PROJECT FOLDER (This is the fix!)
+            cd snippet-stash
+
+            # 2. Update the repo code (Just in case we need files)
+            git pull
+
+            # 3. Stop the old containers
             sudo docker compose down
             
-            # 2. Pull the latest images we just built
+            # 4. Pull the latest images
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/snippet-backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/snippet-frontend:latest
             
-            # 3. Start everything up!
+            # 5. Start everything up!
             sudo docker compose up -d
             sudo docker image prune -f
