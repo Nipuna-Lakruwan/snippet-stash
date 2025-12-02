@@ -7,12 +7,10 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 1. NEW STEP: Install the Pro Builder
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -25,8 +23,7 @@ jobs:
     - name: Build and Push Backend
       uses: docker/build-push-action@v4
       with:
-        context: ./backend       # We point to the folder
-        # file: line removed (It will automatically find ./backend/Dockerfile)
+        context: ./backend
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/snippet-backend:latest
         provenance: false
@@ -34,8 +31,30 @@ jobs:
     - name: Build and Push Frontend
       uses: docker/build-push-action@v4
       with:
-        context: ./frontend      # We point to the folder
-        # file: line removed
+        context: ./frontend
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/snippet-frontend:latest
         provenance: false
+
+  # NEW JOB: Deploy to AWS
+  deploy:
+    needs: build-and-push  # Wait for build to finish first!
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Stop the old containers
+            sudo docker compose down
+            
+            # 2. Pull the latest images we just built
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/snippet-backend:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/snippet-frontend:latest
+            
+            # 3. Start everything up!
+            sudo docker compose up -d
+            sudo docker image prune -f

@@ -1,1 +1,9 @@
 node_modules
+# Ignore Security Keys
+*.pem
+
+# Ignore Terraform binaries and state
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl

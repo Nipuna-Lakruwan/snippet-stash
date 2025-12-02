@@ -7,7 +7,7 @@ function App() {
 
   // 1. Fetch data from backend
   useEffect(() => {
-    fetch('http://localhost:5001/snippets')
+    fetch('http://35.172.111.204:5000')
       .then(res => res.json())
       .then(data => setSnippets(data))
       .catch(err => console.error("Error fetching:", err));
@@ -17,14 +17,14 @@ function App() {
   const addSnippet = async () => {
     if(!title || !code) return;
     
-    await fetch('http://localhost:5001/snippets', {
+    await fetch('http://35.172.111.204:5000', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, code })
     });
 
     // Refresh the list
-    const res = await fetch('http://localhost:5001/snippets');
+    const res = await fetch('http://35.172.111.204:5000');
     const data = await res.json();
     setSnippets(data);
     setTitle('');
