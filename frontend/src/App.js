@@ -33,7 +33,7 @@ function App() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial' }}>
-      <h1>SnippetStash 🐳</h1>
+      <h1>SnippetStash PRO 🚀</h1>
       <p>Your DevOps Cheat Sheet</p>
       
       <div style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
